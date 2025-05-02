@@ -1,32 +1,49 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Build artifacts
+build/
+bin/
+obj/
 *.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
 *.exe
 *.out
-*.app
+*.log
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Visual Studio Code
+.vscode/
+
+# CMake (if used in future)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+imgui.ini
+
+vendor/
+ext/
+
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# Backup/Temp
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# System-specific
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+*.trace
