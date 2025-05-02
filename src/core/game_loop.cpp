@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "imgui_helper.h"
+#include "input.h"
 
 GLFWwindow* window;
 
@@ -14,13 +15,22 @@ void ready() {
     glLoadIdentity();
     glOrtho(-1, 1, -1, 1, -1, 1);
     glMatrixMode(GL_MODELVIEW);
+    input_set_window(window);
+    input_bind("jump", GLFW_KEY_SPACE);
+    input_bind("pause", GLFW_KEY_ESCAPE);
 }
 
+
 void process() {
-    glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+    if (input_is_action_pressed("jump")) {
+        glClearColor(0.2f, 0.6f, 0.2f, 1.0f); // Green if spacebar is held
+    } else {
+        glClearColor(0.1f, 0.1f, 0.15f, 1.0f); // Default background
+    }
     glClear(GL_COLOR_BUFFER_BIT);
     RenderImGui();
 }
+
 
 bool should_close() {
     return glfwWindowShouldClose(window);
