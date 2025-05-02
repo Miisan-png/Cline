@@ -4,6 +4,7 @@
 #include "input.h"
 #include "scene.h"
 #include "game/test_scene.h"
+#include "time.h"
 
 GLFWwindow* window;
 
@@ -33,6 +34,7 @@ bool should_close() {
 }
 
 void update() {
+    time_update();
     glfwPollEvents();
     glfwSwapBuffers(window);
 }
