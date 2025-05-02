@@ -11,6 +11,7 @@
 #include "ecs/components/player_controller.h"
 #include "ecs/systems/player_input.h"
 #include "ecs/systems/movement.h"
+#include "ecs/systems/world_bounds.h"
 #include "ecs/systems/draw_transforms.h"
 
 Entity test;
@@ -36,6 +37,7 @@ struct TestScene : public Scene {
 
         system_player_input();
         system_movement(time_get_delta());
+        system_world_bounds();
         system_draw_transforms();
     }
 
