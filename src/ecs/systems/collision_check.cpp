@@ -1,5 +1,6 @@
 #include "ecs/components/transform.h"
 #include "ecs/components/collider.h"
+#include "ecs/components/area.h"
 #include <cstdio>
 
 bool aabb_overlap(float ax, float ay, float aw, float ah,
@@ -28,7 +29,14 @@ void system_collision_check() {
             float bh = cb->size.y;
 
             if (aabb_overlap(ax, ay, aw, ah, bx, by, bw, bh)) {
-                printf("Entity %d collided with %d\n", a, b);
+                bool a_is_area = area_has(a);
+                bool b_is_area = area_has(b);
+
+                if (a_is_area || b_is_area) {
+                    printf("Trigger: Entity %d entered Area of %d\n", a, b);
+                } else {
+                    printf("Entity %d collided with %d\n", a, b);
+                }
             }
         }
     }

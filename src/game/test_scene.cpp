@@ -11,16 +11,18 @@
 #include "ecs/components/velocity.h"
 #include "ecs/components/player_controller.h"
 #include "ecs/components/collider.h"
+#include "ecs/components/area.h"
 
 #include "ecs/systems/player_input.h"
 #include "ecs/systems/movement.h"
 #include "ecs/systems/world_bounds.h"
+#include "ecs/systems/collision_check.h"
 #include "ecs/systems/draw_transforms.h"
 #include "ecs/systems/collision_draw.h"
-#include "ecs/systems/collision_check.h"
 
 Entity test;
 Entity wall;
+Entity area;
 
 struct TestScene : public Scene {
     void ready() override {
@@ -35,6 +37,12 @@ struct TestScene : public Scene {
         transform_add(wall);
         transform_get(wall)->position = Vec2(0.2f, 0.0f);
         collider_add(wall);
+
+        area = entity_create();
+        transform_add(area);
+        transform_get(area)->position = Vec2(-0.5f, 0.0f);
+        collider_add(area);
+        area_add(area);
 
         input_bind("left", GLFW_KEY_A);
         input_bind("right", GLFW_KEY_D);
@@ -63,8 +71,13 @@ struct TestScene : public Scene {
         transform_remove(wall);
         collider_remove(wall);
 
+        transform_remove(area);
+        collider_remove(area);
+        area_remove(area);
+
         entity_destroy(test);
         entity_destroy(wall);
+        entity_destroy(area);
     }
 };
 
