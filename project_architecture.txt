@@ -1,4 +1,4 @@
-Project Architecture Documentation - Cline OpenGL Game Engine
+Project Architecture Documentation 
 
 1. Project Overview
 Cline is a 2D game engine built with OpenGL, featuring an Entity Component System (ECS) architecture and Dear ImGui integration for debugging and tools. The project follows a modular design with clear separation between core systems, game logic, and third-party integrations.
@@ -92,5 +92,3 @@ b) STB (thirdparty/stb/)
 - Rendering system can be enhanced with more features
 - Physics system can be integrated
 - Asset management system can be improved
-
-This documentation provides a high-level overview of the project's architecture and can be used as a reference for future development or when working with AI assistants to extend the functionality.
