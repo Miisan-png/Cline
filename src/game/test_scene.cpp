@@ -1,8 +1,8 @@
+
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-#include <cmath>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,16 +18,16 @@
 #include "ecs/components/player_controller.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/area.h"
+#include "ecs/components/sprite.h"
 
 #include "ecs/systems/player_input.h"
 #include "ecs/systems/movement.h"
 #include "ecs/systems/world_bounds.h"
 #include "ecs/systems/collision_check.h"
-#include "ecs/systems/draw_transforms.h"
+#include "ecs/systems/draw_sprites.h"
 #include "ecs/systems/collision_draw.h"
 
 Entity player;
-Entity wall;
 std::vector<Entity> coins;
 int score = 0;
 float gameTimer = 0.0f;
@@ -36,22 +36,16 @@ bool win = false;
 struct TestScene : public Scene {
     void ready() override {
         std::srand((unsigned)std::time(nullptr));
+        glEnable(GL_TEXTURE_2D);
 
-        // --- Player Entity ---
         player = entity_create();
         transform_add(player);
         transform_get(player)->position = Vec2(0.0f, 0.0f);
         velocity_add(player);
         player_controller_add(player);
         collider_add(player);
+        sprite_add(player, "assets/robot.png");
 
-        // --- Simple Wall on the Right ---
-        wall = entity_create();
-        transform_add(wall);
-        transform_get(wall)->position = Vec2(0.8f, 0.0f);
-        collider_add(wall);
-
-        // --- Spawn 5 Random “Coin” Entities ---
         for (int i = 0; i < 5; ++i) {
             Entity coin = entity_create();
             transform_add(coin);
@@ -63,7 +57,6 @@ struct TestScene : public Scene {
             coins.push_back(coin);
         }
 
-        // --- Input Bindings ---
         input_bind("left", GLFW_KEY_A);
         input_bind("right", GLFW_KEY_D);
         input_bind("up", GLFW_KEY_W);
@@ -74,7 +67,6 @@ struct TestScene : public Scene {
         float dt = time_get_delta();
         gameTimer += dt;
 
-        // Change background on win
         if (win) {
             glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
         } else {
@@ -82,13 +74,11 @@ struct TestScene : public Scene {
         }
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Run ECS Systems
         system_player_input();
         system_movement(dt);
         system_world_bounds();
         system_collision_check();
 
-        // Manual “area” collision for coin pickup
         Vec2 ppos = transform_get(player)->position;
         for (int i = (int)coins.size() - 1; i >= 0; --i) {
             Entity c = coins[i];
@@ -109,25 +99,18 @@ struct TestScene : public Scene {
             std::cout << "All coins collected in " << gameTimer << " seconds! You win!" << std::endl;
         }
 
-        // Draw everything
-        system_draw_transforms();
+        system_draw_sprites();
         system_collision_draw();
     }
 
     void exit() override {
-        // Clean up player
+        sprite_remove(player);
         transform_remove(player);
         velocity_remove(player);
         player_controller_remove(player);
         collider_remove(player);
         entity_destroy(player);
 
-        // Clean up wall
-        transform_remove(wall);
-        collider_remove(wall);
-        entity_destroy(wall);
-
-        // Clean up any remaining coins
         for (auto c : coins) {
             transform_remove(c);
             collider_remove(c);
