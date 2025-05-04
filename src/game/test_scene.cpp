@@ -19,6 +19,7 @@
 #include "ecs/components/collider.h"
 #include "ecs/components/area.h"
 #include "ecs/components/sprite.h"
+#include "ecs/components/filter.h"
 
 #include "ecs/systems/player_input.h"
 #include "ecs/systems/movement.h"
@@ -26,6 +27,8 @@
 #include "ecs/systems/collision_check.h"
 #include "ecs/systems/draw_sprites.h"
 #include "ecs/systems/collision_draw.h"
+
+
 
 Entity player;
 std::vector<Entity> coins;
@@ -45,6 +48,8 @@ struct TestScene : public Scene {
         player_controller_add(player);
         collider_add(player);
         sprite_add(player, "assets/robot.png");
+        filter_add(player, FILTER_NEAREST);
+
 
         for (int i = 0; i < 5; ++i) {
             Entity coin = entity_create();
