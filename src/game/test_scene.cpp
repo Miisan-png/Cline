@@ -1,9 +1,15 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include "core/scene.h"
 #include "core/time.h"
 #include "core/vec2.h"
-#include "core/draw.h"
 #include "core/input.h"
 
 #include "ecs/entity.h"
@@ -20,30 +26,44 @@
 #include "ecs/systems/draw_transforms.h"
 #include "ecs/systems/collision_draw.h"
 
-Entity test;
+Entity player;
 Entity wall;
-Entity area;
+std::vector<Entity> coins;
+int score = 0;
+float gameTimer = 0.0f;
+bool win = false;
 
 struct TestScene : public Scene {
     void ready() override {
-        test = entity_create();
-        transform_add(test);
-        transform_get(test)->position = Vec2(0.0f, 0.0f);
-        velocity_add(test);
-        player_controller_add(test);
-        collider_add(test);
+        std::srand((unsigned)std::time(nullptr));
 
+        // --- Player Entity ---
+        player = entity_create();
+        transform_add(player);
+        transform_get(player)->position = Vec2(0.0f, 0.0f);
+        velocity_add(player);
+        player_controller_add(player);
+        collider_add(player);
+
+        // --- Simple Wall on the Right ---
         wall = entity_create();
         transform_add(wall);
-        transform_get(wall)->position = Vec2(0.2f, 0.0f);
+        transform_get(wall)->position = Vec2(0.8f, 0.0f);
         collider_add(wall);
 
-        area = entity_create();
-        transform_add(area);
-        transform_get(area)->position = Vec2(-0.5f, 0.0f);
-        collider_add(area);
-        area_add(area);
+        // --- Spawn 5 Random “Coin” Entities ---
+        for (int i = 0; i < 5; ++i) {
+            Entity coin = entity_create();
+            transform_add(coin);
+            float x = -0.7f + static_cast<float>(std::rand()) / RAND_MAX * 1.4f;
+            float y = -0.7f + static_cast<float>(std::rand()) / RAND_MAX * 1.4f;
+            transform_get(coin)->position = Vec2(x, y);
+            collider_add(coin);
+            area_add(coin);
+            coins.push_back(coin);
+        }
 
+        // --- Input Bindings ---
         input_bind("left", GLFW_KEY_A);
         input_bind("right", GLFW_KEY_D);
         input_bind("up", GLFW_KEY_W);
@@ -51,33 +71,70 @@ struct TestScene : public Scene {
     }
 
     void process() override {
-        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        float dt = time_get_delta();
+        gameTimer += dt;
+
+        // Change background on win
+        if (win) {
+            glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+        } else {
+            glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        }
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Run ECS Systems
         system_player_input();
-        system_movement(time_get_delta());
+        system_movement(dt);
         system_world_bounds();
         system_collision_check();
+
+        // Manual “area” collision for coin pickup
+        Vec2 ppos = transform_get(player)->position;
+        for (int i = (int)coins.size() - 1; i >= 0; --i) {
+            Entity c = coins[i];
+            Vec2 cpos = transform_get(c)->position;
+            Vec2 d = ppos - cpos;
+            if (d.x*d.x + d.y*d.y < 0.05f*0.05f) {
+                score++;
+                transform_remove(c);
+                collider_remove(c);
+                area_remove(c);
+                entity_destroy(c);
+                coins.erase(coins.begin() + i);
+                std::cout << "Coin collected! Score: " << score << std::endl;
+            }
+        }
+        if (!win && coins.empty()) {
+            win = true;
+            std::cout << "All coins collected in " << gameTimer << " seconds! You win!" << std::endl;
+        }
+
+        // Draw everything
         system_draw_transforms();
         system_collision_draw();
     }
 
     void exit() override {
-        transform_remove(test);
-        velocity_remove(test);
-        player_controller_remove(test);
-        collider_remove(test);
+        // Clean up player
+        transform_remove(player);
+        velocity_remove(player);
+        player_controller_remove(player);
+        collider_remove(player);
+        entity_destroy(player);
 
+        // Clean up wall
         transform_remove(wall);
         collider_remove(wall);
-
-        transform_remove(area);
-        collider_remove(area);
-        area_remove(area);
-
-        entity_destroy(test);
         entity_destroy(wall);
-        entity_destroy(area);
+
+        // Clean up any remaining coins
+        for (auto c : coins) {
+            transform_remove(c);
+            collider_remove(c);
+            area_remove(c);
+            entity_destroy(c);
+        }
+        coins.clear();
     }
 };
 

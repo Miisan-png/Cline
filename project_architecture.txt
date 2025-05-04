@@ -1,0 +1,96 @@
+Project Architecture Documentation - Cline OpenGL Game Engine
+
+1. Project Overview
+Cline is a 2D game engine built with OpenGL, featuring an Entity Component System (ECS) architecture and Dear ImGui integration for debugging and tools. The project follows a modular design with clear separation between core systems, game logic, and third-party integrations.
+
+2. Directory Structure
+- assets/: Game assets and resources
+- levels/: Level data and configurations
+- src/: Source code directory
+  - core/: Core engine systems
+  - ecs/: Entity Component System
+  - game/: Game-specific implementations
+  - utils/: Utility functions and helpers
+- thirdparty/: External dependencies
+
+3. Core Systems
+
+a) Game Loop (src/core/game_loop.cpp)
+- Manages the main game loop
+- Handles window creation and OpenGL context
+- Controls scene lifecycle
+- Processes input and renders ImGui
+- Functions: ready(), process(), update(), shutdown()
+
+b) Scene Management (src/core/scene.h)
+- Abstract Scene class defining the scene interface
+- Virtual methods: ready(), process(), exit()
+- Scene switching functionality
+- Global scene management functions
+
+c) Input System (src/core/input.h, input.cpp)
+- Key binding system
+- Input state management
+- GLFW integration for keyboard/mouse input
+
+d) Time Management (src/core/time.h, time.cpp)
+- Delta time calculation
+- Frame timing utilities
+
+e) Vector Mathematics (src/core/vec2.h, vec2.cpp)
+- 2D vector operations
+- Mathematical utilities for game physics
+
+f) Drawing System (src/core/draw.h, draw.cpp)
+- OpenGL rendering utilities
+- Basic shape drawing functions
+
+4. Entity Component System (ECS)
+
+a) Entity Management (src/ecs/entity.h, entity.cpp)
+- Entity creation and destruction
+- Entity ID management
+- Basic entity lifecycle
+
+b) Components (src/ecs/components/)
+- Component data structures
+- Component registration system
+
+c) Systems (src/ecs/systems/)
+- System implementations
+- Component processing logic
+
+5. Game Implementation
+
+a) Main Entry (src/game/game_main.cpp)
+- Program entry point
+- Main loop implementation
+- Engine lifecycle management
+
+b) Test Scene (src/game/test_scene.h, test_scene.cpp)
+- Example scene implementation
+- Demonstration of engine features
+
+6. Third-Party Integrations
+
+a) Dear ImGui (thirdparty/imgui/)
+- GUI system for debugging and tools
+- Integration helpers in src/imgui_helper.cpp
+
+b) STB (thirdparty/stb/)
+- Single-file libraries for various utilities
+
+7. Development Workflow
+- The engine uses GLFW for window management and input handling
+- OpenGL is used for rendering with immediate mode for simplicity
+- ImGui provides debugging tools and editor functionality
+- Entity Component System allows for modular game object management
+
+8. Future Development Considerations
+- Component system can be expanded with new components
+- Additional scene types can be implemented
+- Rendering system can be enhanced with more features
+- Physics system can be integrated
+- Asset management system can be improved
+
+This documentation provides a high-level overview of the project's architecture and can be used as a reference for future development or when working with AI assistants to extend the functionality.
