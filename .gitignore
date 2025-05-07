@@ -24,7 +24,7 @@ cmake_install.cmake
 Makefile
 
 imgui.ini
-
+project_architecture.md
 vendor/
 ext/
 
